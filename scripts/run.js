@@ -10,7 +10,20 @@ async function main() {
   // wait until the deployment is finished
   await contract.deployed()
 
-  console.log("Contract address: ", contract.address)
+  console.log("Contract deployed at address: ", contract.address)
+
+  console.log("-------------")
+
+  console.log("Calling `contract.getTotalWaves()`")
+  let count = await contract.getTotalWaves()
+  console.log(`Total wave: ${count.toNumber()}`)
+
+  console.log("Calling `contract.wave()`")
+  await contract.wave()
+
+  console.log("Calling `contract.getTotalWaves()`")
+  count = await contract.getTotalWaves()
+  console.log(`Total wave: ${count.toNumber()}`)
 }
 
 main()
