@@ -19,14 +19,175 @@ to go and try out!
 |  |-- WavePortal.sol
 |-- scripts
 |  |-- run.js
+|  |-- deploy.js
 |__ test
 ```
 
-The `run.js` script will compile and deploy the smart contract using `Hardhat`.
+The `deploy.js` script will compile and deploy the smart contract using `Hardhat`.
+
+To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 
 ## Learning Log
 
-**2020-08-26 12:32**
+### 2020-08-28 13:58
+
+Checkpoint - [my repl](https://replit.com/@Dolpheyn/waveportal-ui-react#src/App.js)
+
+Let's learn how to 1) upload our contract to the testnet, 2) connect a wallet to
+a web app and 3) invoke our smart contract's methods.
+
+**TODO:**
+
+- [X] Setup metamask.
+- [X] Deploy to Alchemy.
+- [X] Make sure window.ethereum is there.
+- [X] Check if we have a connected account.
+- [X] Build connect wallet button.
+- [X] Add ABI and contract address.
+- [X] Read waves.
+- [X] Send waves.
+
+**Uploading A Smart Contract to an Ethereum Testnet**
+
+Alchemy is a tool we can use to deploy a smart contract to the testnet publicly
+in order for miners/validators to validate our deployment(which is just putting
+the bytecode of our compiled contract on-chain. It's like downloading binaries
+to our personal computers, but the difference is we are **uploading** it to a
+universal computer).
+
+Then, we can change hardhat's config by adding the app's url from alchemy and
+our private key(which acts as a password, so don't show it publicly. I mean it's
+written in the name).
+
+The contract address on Goerli testnet(I used Goerli because the Rinkeby faucet
+was too slow):
+
+https://goerli.etherscan.io/address/0x7ca9fd4023c967e258C893F4944b9d38559d4f16
+
+**Connecting A Wallet to Web App**
+
+In order to make our web app able to interact with a smart contract, we need to
+connect it with a wallet. The wallet is like the user's identity, and will do
+all the talking to the chain. Also, any actions on-chain needs to be paid by
+gas, so there's no possible way to do anything without connecting a wallet.
+
+Read list of accounts in the wallet:
+
+```Javascript
+const { ethereum } = window
+if (!ethereum) // handle if no ethereum object
+
+// Now we can call the `request` method and send a method name to invoke
+// `eth_accounts` get the list of accounts
+ethereum.request({ method: 'eth_accounts' })
+  .then(accounts => {
+    if(!accounts.length) // handle no accounts
+
+    console.log('Available accounts:', accounts)
+    setCurrentAddress(accounts[0])
+  })
+```
+
+To connect the wallet(essentially logging in the user), use method
+`eth_requestAccounts`:
+
+```Javascript
+ethereum.request({ method: 'eth_requestAccounts' })
+  .then(accounts => {
+    // Make sure to check if there's accounts first on page load
+    setCurrentAddress(accounts[0])
+  })
+```
+
+Now our web app have been upgraded to a Web3 App!
+
+**Invoking Smart Contract Methods from the Web3 App**
+
+To do anything on-chain, we need a web3 provider. It provides the API to
+interact with the blockchain.
+
+We can do this with `ethers`, which instantiate a generic Web3Provider when
+given the `window.ethereum` variable that are injected by wallets.
+
+Note: we use `window.ethereum` because we're using metamask. I don't know if
+other web3 providers have other way of accessing the provider object.
+
+From the official [docs](https://docs.ethers.io/v5/single-page/#/v5/getting-started/-%23-getting-started--glossary):
+
+    A Provider (in ethers) is a class which provides an abstraction for a
+    connection to the Ethereum Network. It provides read-only access to the
+    Blockchain and its status.
+
+Now, to do any action on the chain, we need a sign from the user. It works as
+our permission to do anything on the chain on behalf of the user.
+
+From the same docs:
+
+    A Signer is a class which (usually) in some way directly or indirectly has
+    access to a private key, which can sign messages and transactions to authorize
+    the network to charge your account ether to perform operations.
+
+The code:
+
+```Javascript
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner()
+```
+
+So the Smart Conract is compiled to bytecode and uploaded to the chain. But
+where do we look for it? How do we invoke the methods from our web app?
+
+When a smart contract gets deployed, a transaction to the `Contract creation`
+node is sent. You can see all the information like the sender and receiver, the
+transaction fee, gas price etc. But most importantly, you can see the bytecode
+in the `Input Data` attribute of the transaction.
+
+Look here for my contract's bytecode (in Input data):
+
+https://goerli.etherscan.io/tx/0x27c39e92cb03a8c619e685b7d38d1ced63e22fc6c3cc915b2d6719d1a2cdbb27
+
+Our web3 app can call the methods by using an ABI(Application Binary Interface)
+of the compiled contract. ABI provides the methods' signature so we know the
+name and the parameter required for each methods in the contract.
+
+We can get the ABI for our contract in the generated
+`artifacts/contracts/{ContractName}.sol/{ContractName}.json`. Hardhat produces
+this whenever we compile the contract.
+
+Copy the file into folder `src/utils` in our web3 app, then import the json
+file. `import abi from ./utils/{ContractName}.json`
+
+Now we can load the contract with ethers:
+
+```Javascript
+import abi from ./utils/{ContractName}.json
+const contractAddress = ""
+const contractABI = abi.abi
+
+// prev code for provider and signer
+const contract = new ethers.Contract(contractAddress, contractAbi, signer)
+```
+
+And call the contract's methods!
+
+```Javascript
+let count = await contract.getTotalWaves()
+console.log(`Wave count: ${count}`)
+
+// This method will make a metamask popup show to let the user allow the
+// transaction to happen. The getTotalWaves didn't require this because it is
+// only a `view` function
+const waveTxn = await contract.wave()
+console.log(`Mining txn: ${waveTxn.hash}`)
+
+await waveTxn.wait()
+console.log(`Mined! ${waveTxn.hash}`)
+
+count = await contract.getTotalWaves()
+console.log(`New wave count: ${count}`)
+```
+
+### 2020-08-26 12:32
 
 Checkpoint - [d63bd3b](https://github.com/Dolpheyn/wave-portal-dApp/commit/d63bd3bb0e8346a23fc7d91b250514bcc49f3785)
 
