@@ -14,13 +14,19 @@ to go and try out!
 ## Directory Structure
 
 ```
-.
-|-- contracts
-|  |-- WavePortal.sol
-|-- scripts
-|  |-- run.js
-|  |-- deploy.js
-|__ test
+. tech-blog-place-dApp/
+|__ app/
+| |__ src/
+|    |-- pages/Index.vue // Main page
+|    |__ utils/WavePortal.json // contract ABI
+|  
+|__ contract/
+  |-- contracts/
+  |  |__ WavePortal.sol // Contract source
+  |-- scripts/
+  |  |-- run.js
+  |  |__ deploy.js
+  |__ test/
 ```
 
 The `deploy.js` script will compile and deploy the smart contract using `Hardhat`.
