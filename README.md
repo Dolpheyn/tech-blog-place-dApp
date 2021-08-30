@@ -1,4 +1,4 @@
-# WavePortal dApp 👋
+# Tech Blog Place App 💻
 
 This project demonstrates a basic smart contract. It allows users to send
 messages to a smart contract, and display it as some kind of a log. 
@@ -41,8 +41,10 @@ input is indeed a link)
 Writing a web3 in Quasar/Vue is a bit painful especially with typescript since a
 lot of the type like `window.ethereum` cannot be inferred at compile time.
 
-using `window.addEventListener('load', () => {})` feels a bit hackish, but it's
+Using `window.addEventListener('load', () => {})` feels a bit hackish, but it's
 fine for now.
+
+Latest contract: https://goerli.etherscan.io/address/0x27B1c57093B297823e47102e9EcAe61Ac5764eC9
 
 ### 2020-08-28 13:58
 
