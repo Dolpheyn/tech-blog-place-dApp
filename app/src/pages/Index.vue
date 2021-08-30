@@ -55,29 +55,29 @@ export default defineComponent({
     };
   },
 
-  async created() {
+  created() {
     this.checkIfWalletIsThere()
   },
 
   methods: {
     checkIfWalletIsThere() {
-      window.addEventListener("load", async () => {
+      window.addEventListener('load', () => {
         const { ethereum } = window
         if (!ethereum) {
-          console.log("Doesn't have metamask")
+          console.log('No metamask')
         } else {
-          console.log("We have an ethereum object!!", ethereum)
+          console.log('We have an ethereum object!!', ethereum)
         }
 
         ethereum.request({ method: 'eth_accounts' })
           .then(async accounts => {
             console.log('Available accounts: ', accounts)
             if (accounts.length !== 0) {
-              console.log("We have an authorized account")
+              console.log('We have an authorized account')
               this.userAddr = accounts[0]
               await this.getAllRecommendations()
             } else {
-              console.log("User has not given us perms")
+              console.log('User has not given us perms')
             }
           })
       })
