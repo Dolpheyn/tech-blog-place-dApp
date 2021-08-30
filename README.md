@@ -29,6 +29,21 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 
 ## Learning Log
 
+### 2020-08-30 12:04
+
+Learned about sending values to smart contract methods' parameters.
+
+Ported the React app to a Quasar app in the repo since I'm more used to it.
+
+Edit the smart contract to accept a blog link (still no validation whether the
+input is indeed a link)
+
+Writing a web3 in Quasar/Vue is a bit painful especially with typescript since a
+lot of the type like `window.ethereum` cannot be inferred at compile time.
+
+using `window.addEventListener('load', () => {})` feels a bit hackish, but it's
+fine for now.
+
 ### 2020-08-28 13:58
 
 Checkpoint - [my repl](https://replit.com/@Dolpheyn/waveportal-ui-react#src/App.js)
