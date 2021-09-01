@@ -49,7 +49,7 @@ import abi from '../utils/TechBlogPlace.json'
 
 declare let window: any
 
-const contractAddress = '0x27B1c57093B297823e47102e9EcAe61Ac5764eC9'
+const contractAddress = '0xdE79558Fd209CA933Bc84006f6670561F266FE9f'
 const contractABI = abi.abi
 
 export default defineComponent({
