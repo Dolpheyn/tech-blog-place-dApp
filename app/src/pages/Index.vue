@@ -1,32 +1,42 @@
 <template>
   <q-page>
-    <div class="column items-center justify-evenly">
+    <q-btn
+      class="btn-wallet"
+      v-if="!userAddr"
+      @click="connectWallet"
+    >
+      Connect Wallet
+    </q-btn>
+    <div class="column items-center justify-evenly q-py-md">
       <h2>Hello 🐬</h2>
 
-      <div class="q-pa-md" style="max-width: 700px">
+      <div style="max-width: 700px">
         I'm Dolpheyn and I like reading beautiful technical blogs and blogposts.
         Connect your Ethereum wallet and recommend one of your favourites to me.
         Feel free to also recommend your personal blog!
       </div>
 
-      <q-btn v-if="!userAddr" @click="connectWallet">
-        Connect Wallet
-      </q-btn>
-
-      <div class="q-ma-md" style="width: 400px">
-        <q-input type="textarea" v-model="blogLink" />
-      </div>
-
-      <q-btn @click="sendRecommendation">Recommend</q-btn>
-
-      <div class="q-mt-md" v-if="allRecommendations.length">
+      <div
+        class="q-mt-md q-mb-xl"
+        v-if="allRecommendations.length"
+        style="max-height: 400px !important; min-width: 500px; overflow: hidden scroll">
         <div v-for="rec in allRecommendations" :key="rec.timestamp._hex" >
-          <div>
-            {{rec.recommender}} recommended 
+          <q-chat-message
+            :name="rec.recommender"
+            :stamp="rec.timestamp"
+            :bg-color="rec.isUserSent ? 'lightblue' : 'lightgrey'"
+            :sent="rec.isUserSent"
+          >
             <a :href="rec.blog" target="blank">{{rec.blog}}</a>
-          </div>
+          </q-chat-message>
         </div>
       </div>
+
+      <div style="min-width: 500px" class="q-mb-md">
+        <q-input rounded outlined v-model="blogLink"/>
+      </div>
+
+      <q-btn @click="sendRecommendation" color="primary">Recommend</q-btn>
     </div>
   </q-page>
 </template>
@@ -34,6 +44,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { ethers } from 'ethers'
+import { date } from 'quasar'
 import abi from '../utils/TechBlogPlace.json'
 
 declare let window: any
@@ -107,6 +118,20 @@ export default defineComponent({
       if(!this.contract) this.setContract()
 
       let recommendations = await this.contract.getAllRecommendations()
+
+      recommendations = recommendations.map(r => {
+        const timestamp = date.formatDate(new Date(r.timestamp * 1000),
+                                          'YYYY-MM-DD HH:mm')
+        const recommender = r.recommender.substr(0, 6)
+        const isUserSent = this.userAddr.substr(0, 6) == recommender
+
+        return {
+          ...r,
+          timestamp,
+          recommender,
+          isUserSent,
+        }
+      })
       console.log(recommendations)
 
       this.allRecommendations = recommendations
@@ -132,3 +157,10 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+.btn-wallet {
+  position: absolute;
+  right: 50px;
+}
+</style>
