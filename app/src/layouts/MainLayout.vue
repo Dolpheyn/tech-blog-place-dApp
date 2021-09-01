@@ -1,9 +1,13 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="my-header">
       <q-toolbar>
-        <q-toolbar-title class="row items-center justify-evenly">
-          Tech Blog Place
+        <q-toolbar-title class="row">
+          <q-img
+            src="../assets/tech-blog-place.png"
+            style="height: 50px; width: 250px"
+            class="q-ma-sm"
+          />
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -29,3 +33,9 @@ export default defineComponent({
   }
   })
 </script>
+
+<style scoped>
+.my-header {
+  background-color: white;
+}
+</style>
