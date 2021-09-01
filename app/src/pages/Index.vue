@@ -159,7 +159,7 @@ export default defineComponent({
       notif({
         icon: 'done',
         spinner: false,
-        message: 'Done! Thank you for recommending.',
+        message: 'Done! Thank you for recommending, I sent 0.001 eth to your wallet. Enjoy!',
         timeout: 1000,
         color: 'positive',
       })
