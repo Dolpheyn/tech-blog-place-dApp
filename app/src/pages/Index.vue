@@ -44,7 +44,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { ethers } from 'ethers'
-import { date } from 'quasar'
+import { date, Notify } from 'quasar'
 import abi from '../utils/TechBlogPlace.json'
 
 declare let window: any
@@ -145,9 +145,24 @@ export default defineComponent({
 
       const recTxn = await this.contract.recommend(this.blogLink)
       console.log(`Mining txn: ${recTxn.hash}`)
+      const notif = Notify.create({
+        group: false,
+        message: 'Mining your recommendation transaction.',
+        position: 'top',
+        spinner: true,
+        timeout: 0,
+        color: 'info',
+      })
 
       await recTxn.wait()
       console.log(`Mined! ${recTxn.hash}`)
+      notif({
+        icon: 'done',
+        spinner: false,
+        message: 'Done! Thank you for recommending.',
+        timeout: 1000,
+        color: 'positive',
+      })
 
       count = await this.contract.getTotalRecommendations()
       console.log(`New recommendation count: ${count}`)
