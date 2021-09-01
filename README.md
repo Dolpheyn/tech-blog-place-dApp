@@ -258,3 +258,61 @@ fine for now.
 
 Latest contract: https://goerli.etherscan.io/address/0x27B1c57093B297823e47102e9EcAe61Ac5764eC9
 
+## 2020-09-01 09:48
+
+Niced the UI a little bit, 1) made the log looks like a chat history, 2)
+notification for when the transaction is mining and mined, 3) added a logo
+
+Learned how to fund a contract (add ether to its balance)
+
+A contract must be `payable` to allow funding, which means that its value can be
+overriden. We can do this by adding the `payable` keyword on the contract's
+constructor.
+
+```Solidity
+contract MyContract {
+  constructor payable() {
+
+  }
+}
+```
+
+Now, we can change the deployment scripts to override the value of the contract
+at deploy time.
+
+```Javascript
+const contractFactory = await hre.ethers.getContractFactory("TechBlogPlace")
+
+// deploy the contract on a local chain
+// and fund some eth into it
+const contract = await contractFactory.deploy({
+  value: hre.ethers.utils.parseEther("0.1")
+})
+```
+
+The contract will then has a balance if you look go to its address on etherscan.
+
+![](./imgs/contract-balance.png)
+
+After someone recommended, we can gift them some eth like this:
+
+```Solidity
+uint prizeAmount = 0.001 ether;
+
+// We need the balance of this contract to be more than the prize amount.
+// `require` is like `assert`
+require(prizeAmount <= address(this).balance,
+        "Trying to withdraw more money than the contract has.");
+
+// Send the sender some eth and get result. `(msg.sender)` is the sender's
+// address. We use the
+(bool success,) = (msg.sender).call{value: prizeAmount}("");
+
+// If success == false, report failure
+require(success, "Failed to withdraw money from contract.");
+```
+
+There are some best practices to give users money in real world applications,
+like not allowing users to call the withdraw function twice written
+[here](https://consensys.github.io/smart-contract-best-practices/known_attacks/),
+But in our use case it's fine.
