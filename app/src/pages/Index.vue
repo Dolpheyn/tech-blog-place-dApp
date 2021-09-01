@@ -18,8 +18,10 @@
 
       <div
         class="q-mt-md q-mb-xl"
-        v-if="allRecommendations.length"
-        style="max-height: 400px !important; min-width: 500px; overflow: hidden scroll">
+        style="height: 400px !important; min-width: 500px; overflow: hidden scroll"
+      >
+        <q-chat-message label="Tech Blog Place" />
+
         <div v-for="rec in allRecommendations" :key="rec.timestamp._hex" >
           <q-chat-message
             :name="rec.recommender"
@@ -36,7 +38,11 @@
         <q-input rounded outlined v-model="blogLink"/>
       </div>
 
-      <q-btn @click="sendRecommendation" color="primary">Recommend</q-btn>
+      <q-btn
+        @click="sendRecommendation"
+        color="primary"
+        :disabled="!blogLink.length"
+      >Recommend</q-btn>
     </div>
   </q-page>
 </template>
@@ -49,6 +55,7 @@ import abi from '../utils/TechBlogPlace.json'
 
 declare let window: any
 
+const goerliChainId = '0x5'
 const contractAddress = '0xdE79558Fd209CA933Bc84006f6670561F266FE9f'
 const contractABI = abi.abi
 
@@ -74,11 +81,29 @@ export default defineComponent({
     checkIfWalletIsThere() {
       window.addEventListener('load', () => {
         const { ethereum } = window
+
         if (!ethereum) {
           console.log('No metamask')
-        } else {
-          console.log('We have an ethereum object!!', ethereum)
+
+          Notify.create({
+            actions: [
+              { label: 'Reload', color: 'primary', handler: () => {
+                this.$router.go(0)
+              }},
+              { label: 'Dismiss', color: 'secondary', handler: () => {} },
+            ],
+            color: 'negative',
+            icon: 'error',
+            message: 'Metamask wallet is required to use this app.',
+            multiLine: true,
+            position: 'top',
+            timeout: 0,
+          })
+
+          return
         }
+
+        console.log('We have an ethereum object!!', ethereum)
 
         ethereum.request({ method: 'eth_accounts' })
           .then(async accounts => {
@@ -107,15 +132,42 @@ export default defineComponent({
 
     setContract() {
       const { ethereum } = window
-      console.log(ethereum)
+      const result = { isOkay: false }
+
+      // Check if user is on the right chain
+      if(ethereum.chainId !== goerliChainId) {
+        Notify.create({
+          actions: [
+            { label: 'Reload', color: 'primary', handler: () => {
+              this.$router.go(0)
+            }},
+            { label: 'Dismiss', color: 'secondary', handler: () => {} },
+          ],
+          color: 'negative',
+          icon: 'error',
+          message: 'You are not on the Goerli chain. Change your network in Metamask to continue',
+          multiLine: true,
+          position: 'top',
+          timeout: 0,
+        })
+
+        return result
+      }
+
       const provider = new ethers.providers.Web3Provider(ethereum)
       const signer = provider.getSigner()
 
       this.contract = new ethers.Contract(contractAddress, contractABI, signer)
+
+      result.isOkay = true
+      return result
     },
 
     async getAllRecommendations() {
-      if(!this.contract) this.setContract()
+      if(!this.contract) {
+        const result = this.setContract()
+        if(!result.isOkay) return
+      }
 
       let recommendations = await this.contract.getAllRecommendations()
 
@@ -138,7 +190,10 @@ export default defineComponent({
     },
 
     async sendRecommendation() {
-      if(!this.contract) this.setContract()
+      if(!this.contract) {
+        const result = this.setContract()
+        if(!result.isOkay) return
+      }
 
       let count = await this.contract.getTotalRecommendations()
       console.log(`Recommendation count: ${count}`)
@@ -146,22 +201,22 @@ export default defineComponent({
       const recTxn = await this.contract.recommend(this.blogLink)
       console.log(`Mining txn: ${recTxn.hash}`)
       const notif = Notify.create({
+        color: 'info',
         group: false,
         message: 'Mining your recommendation transaction.',
         position: 'top',
         spinner: true,
         timeout: 0,
-        color: 'info',
       })
 
       await recTxn.wait()
       console.log(`Mined! ${recTxn.hash}`)
       notif({
-        icon: 'done',
-        spinner: false,
-        message: 'Done! Thank you for recommending, I sent 0.001 eth to your wallet. Enjoy!',
-        timeout: 1000,
         color: 'positive',
+        icon: 'done',
+        message: 'Done! Thank you for recommending, I sent 0.001 eth to your wallet. Enjoy!',
+        spinner: false,
+        timeout: 1000,
       })
 
       count = await this.contract.getTotalRecommendations()
