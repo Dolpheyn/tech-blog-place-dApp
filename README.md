@@ -35,22 +35,53 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 
 ## Learning Log
 
-### 2020-08-30 12:04
+### 2020-08-26 12:32
 
-Learned about sending values to smart contract methods' parameters.
+Checkpoint - [d63bd3b](https://github.com/Dolpheyn/wave-portal-dApp/commit/d63bd3bb0e8346a23fc7d91b250514bcc49f3785)
 
-Ported the React app to a Quasar app in the repo since I'm more used to it.
+-- Created a smart contract with a local state `totalWaves` and two methods, one
+to mutate the state by incrementing it and another to access and return its
+value.
 
-Edit the smart contract to accept a blog link (still no validation whether the
-input is indeed a link)
+The mutating method(similar to `POST` HTTP method, setter methods in Java or
+methods that requires `mut self` in Rust) also accesses a global state that
+every contracts have access to -- `msg`. We accessed the `msg.sender` variable
+which holds the address of whoever that sends the transaction.
 
-Writing a web3 in Quasar/Vue is a bit painful especially with typescript since a
-lot of the type like `window.ethereum` cannot be inferred at compile time.
+The global variables exist because when a function in our smart contract is
+called/invoked, it's actually the blockchain that does it, and the blockchain
+sends along the `calldata`, which is the metadata from the external function
+call.
 
-Using `window.addEventListener('load', () => {})` feels a bit hackish, but it's
-fine for now.
+Here's how I picture it:
+```
+     (1)                              (2)
+user ---------------------> blockhain ---------------> contract (addr - 0xfoo)
+      "pls invoke function            "pls invoke `increment`,
+       `increment` on contract         and here's what you
+       with address 0xfoo"             need to know about this
+                                       transaction (in `msg`)"
+```
 
-Latest contract: https://goerli.etherscan.io/address/0x27B1c57093B297823e47102e9EcAe61Ac5764eC9
+Note: The process in (2) is the one that requires the famous term `mining` or
+`validating` (i think so). Without any stakeholders that validate your
+transaction, the transaction wouldn't be made.
+
+Along with `sender`, there's also other accessable variables in the `msg` global
+variable:
+
+- `data` -- immutable(you cannot change them), non-persistent(it will be gone
+  after this transaction is done) area where function arguments are stored and
+  behave mostly like memory.
+- `gas` -- Available remaining gas.
+- `sig` -- First for bytes of the calldata that tells which function to be
+  called.
+- `value` -- How much wei(a representation of eth) are you sending me?
+
+The local state is however not persistent. It is created when `Hardhat` create
+the contract locally and destroyed after it finished deploying and invoking the
+two contract methods. In order to make it persistent, we need to deploy the
+contract on-chain, whether on a testnet or the mainnet.
 
 ### 2020-08-28 13:58
 
@@ -210,50 +241,20 @@ count = await contract.getTotalWaves()
 console.log(`New wave count: ${count}`)
 ```
 
-### 2020-08-26 12:32
+### 2020-08-30 12:04
 
-Checkpoint - [d63bd3b](https://github.com/Dolpheyn/wave-portal-dApp/commit/d63bd3bb0e8346a23fc7d91b250514bcc49f3785)
+Learned about sending values to smart contract methods' parameters.
 
--- Created a smart contract with a local state `totalWaves` and two methods, one
-to mutate the state by incrementing it and another to access and return its
-value.
+Ported the React app to a Quasar app in the repo since I'm more used to it.
 
-The mutating method(similar to `POST` HTTP method, setter methods in Java or
-methods that requires `mut self` in Rust) also accesses a global state that
-every contracts have access to -- `msg`. We accessed the `msg.sender` variable
-which holds the address of whoever that sends the transaction.
+Edit the smart contract to accept a blog link (still no validation whether the
+input is indeed a link)
 
-The global variables exist because when a function in our smart contract is
-called/invoked, it's actually the blockchain that does it, and the blockchain
-sends along the `calldata`, which is the metadata from the external function
-call.
+Writing a web3 in Quasar/Vue is a bit painful especially with typescript since a
+lot of the type like `window.ethereum` cannot be inferred at compile time.
 
-Here's how I picture it:
-```
-     (1)                              (2)
-user ---------------------> blockhain ---------------> contract (addr - 0xfoo)
-      "pls invoke function            "pls invoke `increment`,
-       `increment` on contract         and here's what you
-       with address 0xfoo"             need to know about this
-                                       transaction (in `msg`)"
-```
+Using `window.addEventListener('load', () => {})` feels a bit hackish, but it's
+fine for now.
 
-Note: The process in (2) is the one that requires the famous term `mining` or
-`validating` (i think so). Without any stakeholders that validate your
-transaction, the transaction wouldn't be made.
+Latest contract: https://goerli.etherscan.io/address/0x27B1c57093B297823e47102e9EcAe61Ac5764eC9
 
-Along with `sender`, there's also other accessable variables in the `msg` global
-variable:
-
-- `data` -- immutable(you cannot change them), non-persistent(it will be gone
-  after this transaction is done) area where function arguments are stored and
-  behave mostly like memory.
-- `gas` -- Available remaining gas.
-- `sig` -- First for bytes of the calldata that tells which function to be
-  called.
-- `value` -- How much wei(a representation of eth) are you sending me?
-
-The local state is however not persistent. It is created when `Hardhat` create
-the contract locally and destroyed after it finished deploying and invoking the
-two contract methods. In order to make it persistent, we need to deploy the
-contract on-chain, whether on a testnet or the mainnet.
