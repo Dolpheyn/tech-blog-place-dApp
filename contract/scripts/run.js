@@ -5,12 +5,18 @@ async function main() {
   const contractFactory = await hre.ethers.getContractFactory("TechBlogPlace")
 
   // deploy the contract on a local chain
-  const contract = await contractFactory.deploy()
+  // and fund some eth into it
+  const contract = await contractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1")
+  })
 
   // wait until the deployment is finished
   await contract.deployed()
 
   console.log("Contract deployed at address: ", contract.address)
+
+  let contractBalance = await hre.ethers.provider.getBalance(contract.address)
+  console.log(`Contract balance: ${hre.ethers.utils.formatEther(contractBalance)}`)
 
   console.log("-------------")
 
@@ -20,6 +26,9 @@ async function main() {
 
   console.log("Calling `contract.recommend()`")
   await contract.recommend("https://dolpheyn.github.io")
+
+  contractBalance = await hre.ethers.provider.getBalance(contract.address)
+  console.log(`Contract balance: ${hre.ethers.utils.formatEther(contractBalance)}`)
 
   console.log("Calling `contract.getTotalRecommendations()`")
   count = await contract.getTotalRecommendations()
