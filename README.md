@@ -36,7 +36,7 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 ## Learning Log
 
 <details>
-  <summary>2020-08-26 12:32</summary>
+  <summary>2021-08-26 12:32</summary>
 
   Checkpoint -
   [d63bd3b](https://github.com/Dolpheyn/wave-portal-dApp/commit/d63bd3bb0e8346a23fc7d91b250514bcc49f3785)
@@ -88,7 +88,7 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 </details>
 
 <details>
-  <summary>2020-08-28 13:58</summary>
+  <summary>2021-08-28 13:58</summary>
 
   Checkpoint - [my repl](https://replit.com/@Dolpheyn/waveportal-ui-react#src/App.js)
 
@@ -249,7 +249,7 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 </details>
 
 <details>
-  <summary>2020-08-30 12:04</summary>
+  <summary>2021-08-30 12:04</summary>
 
   Learned about sending values to smart contract methods' parameters.
 
@@ -269,7 +269,7 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
 </details>
 
 <details>
-  <summary>2020-09-01 09:48</summary>
+  <summary>2021-09-01 09:48</summary>
 
   Niced the UI a little bit, 1) made the log looks like a chat history, 2)
   notification for when the transaction is mining and mined, 3) added a logo
