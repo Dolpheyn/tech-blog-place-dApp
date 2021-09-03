@@ -1,3 +1,4 @@
+const {assert} = require('chai')
 const hre = require('hardhat')
 
 async function main() {
@@ -24,15 +25,25 @@ async function main() {
   let count = await contract.getTotalRecommendations()
   console.log(`Total Recommendations: ${count.toNumber()}`)
 
-  console.log("Calling `contract.recommend()`")
-  await contract.recommend("https://dolpheyn.github.io")
+  console.log("-------------")
 
-  contractBalance = await hre.ethers.provider.getBalance(contract.address)
-  console.log(`Contract balance: ${hre.ethers.utils.formatEther(contractBalance)}`)
+  for(const i of [1, 2]) {
+    console.log("Calling `contract.recommend()`")
 
-  console.log("Calling `contract.getTotalRecommendations()`")
-  count = await contract.getTotalRecommendations()
-  console.log(`Total Recommendation: ${count.toNumber()}`)
+    try {
+      await contract.recommend("https://dolpheyn.github.io")
+    } catch(e) {
+      assert(i == 2)
+      console.log('Successfully error for second message!')
+    }
+
+    contractBalance = await hre.ethers.provider.getBalance(contract.address)
+    console.log(`Contract balance: ${hre.ethers.utils.formatEther(contractBalance)}`)
+
+    console.log("Calling `contract.getTotalRecommendations()`")
+    count = await contract.getTotalRecommendations()
+    console.log(`Total Recommendation: ${count.toNumber()}`)
+  }
 
   const allRecommendations = await contract.getAllRecommendations()
   console.log(allRecommendations)
