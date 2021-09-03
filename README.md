@@ -329,3 +329,20 @@ To deploy to the `Goerli` testnet, run `npm run deploy -- --network goerli`
   But in our use case it's fine.
 
 </details>
+
+<details>
+  <summary>2021-09-03 09:35</summary>
+
+  Add a random winner selector by randomly generating a number from each
+  transaction's difficulty, timestamp and the last transaction's random number.
+
+  Also a mechanism to prevent spam using the `mapping` type, which is similar to
+  hashmaps. It maps addresses to the last time a user sends a recommendation and
+  we can use it to check if the last timestamp difference to current time is
+  larger than a specified value.
+
+  Latest contract address:
+
+  https://goerli.etherscan.io/address/0xCe9de63cc7352CEF3E63A5b1b9680e36D020a4Fc
+
+</details>
