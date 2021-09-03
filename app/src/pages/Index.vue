@@ -7,18 +7,76 @@
     >
       Connect Wallet
     </q-btn>
-    <div class="column items-center justify-evenly q-py-md">
-      <h2>Hello 🐬</h2>
+    <div class="column items-center justify-evenly q-py-md q-gutter-sm">
+      <h3 class="q-mb-sm">Hello 🐬</h3>
 
       <div style="max-width: 700px">
-        I'm Dolpheyn and I like reading beautiful technical blogs and blogposts.
-        Connect your Ethereum wallet and recommend one of your favourites to me.
-        Feel free to also recommend your personal blog!
+        <p>
+          I'm Dolpheyn and I like reading beautiful technical blogs and blogposts.
+          Connect your Ethereum wallet and recommend one of your favourites to me.
+          Feel free to also recommend your personal blog!
+        </p>
+
+        <!--
+        <p>
+          Vote blog recommendations that you enjoyed. If your recommendation is
+          the week's winner, you get 0.005 eth!
+        </p>
+        -->
       </div>
+
+      <!--
+      <div class="column items-center q-gutter-sm">
+        <q-btn no-caps>Reveal winners</q-btn>
+        <q-card style="max-width: 700px">
+          <q-carousel
+            v-model="slide"
+            transition-prev="jump-right"
+            transition-next="jump-left"
+            swipeable
+            animated
+            control-color="white"
+            prev-icon="arrow_left"
+            next-icon="arrow_right"
+            navigation-icon="radio_button_unchecked"
+            navigation
+            padding
+            arrows
+            height="200px"
+            class="bg-purple text-white shadow-1 rounded-borders"
+          >
+            <q-carousel-slide name="style" class="column no-wrap flex-center">
+              <q-icon name="style" size="56px" />
+              <div class="q-mt-md text-center">
+                {{ lorem }}
+              </div>
+            </q-carousel-slide>
+            <q-carousel-slide name="tv" class="column no-wrap flex-center">
+              <q-icon name="live_tv" size="56px" />
+              <div class="q-mt-md text-center">
+                {{ lorem }}
+              </div>
+            </q-carousel-slide>
+            <q-carousel-slide name="layers" class="column no-wrap flex-center">
+              <q-icon name="layers" size="56px" />
+              <div class="q-mt-md text-center">
+                {{ lorem }}
+              </div>
+            </q-carousel-slide>
+            <q-carousel-slide name="map" class="column no-wrap flex-center">
+              <q-icon name="terrain" size="56px" />
+              <div class="q-mt-md text-center">
+                {{ lorem }}
+              </div>
+            </q-carousel-slide>
+          </q-carousel>
+        </q-card>
+      </div>
+      -->
 
       <div
         class="q-mt-md q-mb-xl"
-        style="height: 400px !important; min-width: 600px; overflow: hidden scroll"
+        style="height: 600px !important; min-width: 600px; overflow: hidden scroll"
       >
         <q-chat-message label="Tech Blog Place" />
 
@@ -35,15 +93,24 @@
         </div>
       </div>
 
-      <div style="min-width: 500px" class="q-mb-md">
-        <q-input rounded outlined v-model="blogLink"/>
+      <div style="min-width: 600px" class="q-mb-sm">
+        <q-input rounded outlined v-model="blogLink" style="position: relative">
+          <transition
+            appear
+            appear-active-class="animated fadeIn"
+          >
+            <q-btn
+              round
+              v-if="blogLink.length"
+              @click="sendRecommendation"
+              color="primary"
+              style="position: absolute;right: 3px; top: 7px"
+              icon="arrow_right"
+            />
+          </transition>
+        </q-input>
       </div>
 
-      <q-btn
-        @click="sendRecommendation"
-        color="primary"
-        :disabled="!blogLink.length"
-      >Recommend</q-btn>
     </div>
   </q-page>
 </template>
