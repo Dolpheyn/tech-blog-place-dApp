@@ -18,16 +18,17 @@
 
       <div
         class="q-mt-md q-mb-xl"
-        style="height: 400px !important; min-width: 500px; overflow: hidden scroll"
+        style="height: 400px !important; min-width: 600px; overflow: hidden scroll"
       >
         <q-chat-message label="Tech Blog Place" />
 
         <div v-for="rec in allRecommendations" :key="rec.timestamp._hex" >
           <q-chat-message
-            :name="rec.recommender"
+            :name="rec.name"
             :stamp="rec.timestamp"
-            :bg-color="rec.isUserSent ? 'lightblue' : 'lightgrey'"
-            :sent="rec.isUserSent"
+            :bg-color="rec.isUserSender ? 'lightblue' : 'lightgrey'"
+            :sent="rec.isUserSender"
+            :avatar="getProfilePictureUrl(rec.recommender)"
           >
             <a :href="rec.blog" target="blank">{{rec.blog}}</a>
           </q-chat-message>
@@ -174,14 +175,14 @@ export default defineComponent({
       recommendations = recommendations.map(r => {
         const timestamp = date.formatDate(new Date(r.timestamp * 1000),
                                           'YYYY-MM-DD HH:mm')
-        const recommender = r.recommender.substr(0, 6)
-        const isUserSent = this.userAddr.substr(0, 6) == recommender
+        const name = r.recommender.substr(0, 6)
+        const isUserSender = this.userAddr.substr(0, 6) == name
 
         return {
           ...r,
           timestamp,
-          recommender,
-          isUserSent,
+          name,
+          isUserSender,
         }
       })
       console.log(recommendations)
@@ -223,7 +224,12 @@ export default defineComponent({
       console.log(`New recommendation count: ${count}`)
 
       await this.getAllRecommendations()
-    }
+    },
+
+    getProfilePictureUrl(addr: string): string {
+      return `https://joeschmoe.io/api/v1/${addr}`
+    },
+
   }
 });
 </script>
