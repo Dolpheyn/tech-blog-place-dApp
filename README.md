@@ -1,7 +1,7 @@
 # Tech Blog Place App 💻
 
 This project demonstrates a basic smart contract. It allows users to send
-messages to a smart contract, and display it as some kind of a log. 
+messages to a smart contract, and display it as some kind of a log.
 
 ## __buildspace
 
@@ -10,6 +10,8 @@ hands on [course](https://buildspace.so/solidity) "Build a Web3 App on Ethereum
 with Solidty + Smart Contracts". It's a free, high quality course and I
 personally recommend everyone that wants to start learning how to develop dApps
 to go and try out!
+
+![Tech Blog Place](imgs/tech-blog-place.png)
 
 ## Directory Structure
 
