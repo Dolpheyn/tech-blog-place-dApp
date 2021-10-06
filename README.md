@@ -3,6 +3,8 @@
 This project demonstrates a basic smart contract. It allows users to send
 messages to a smart contract, and display it as some kind of a log.
 
+[https://tech-blog-place-dapp.vercel.app/](https://tech-blog-place-dapp.vercel.app/)
+
 ## __buildspace
 
 This project is the result from following [buildspace](https://buildspace.so/)'s
